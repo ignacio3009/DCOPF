@@ -1,0 +1,26 @@
+model Con_seguridad
+uses "mmxprs","mmsheet","mmetc","mmjobs","mmsystem"
+
+
+parameters
+	M = 10000
+end-parameters
+
+
+declarations
+  P_MIN: array(gen) of real
+  P_MAX: array(gen) of real
+  F_MAX: array(lineas) of real
+  CV: array(gen) of real
+  p: array(gen,escenarios) of mpvar		!potencias
+  f: array(lineas,escenarios) of mpvar
+  theta: array(barras,escenarios) of mpvar
+  Objective:linctr
+end-declarations
+
+initialisations from 'mmsheet.excel:'+'data.xlsx'
+	A 			as "skiph;noindex;A"
+	B			as "skiph;noindex;B"
+end-initialisations
+
+
