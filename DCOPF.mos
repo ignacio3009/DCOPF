@@ -1,4 +1,4 @@
-model Con_seguridad
+model DCOPF
 uses "mmxprs","mmsheet","mmetc","mmjobs","mmsystem"
 
 
@@ -6,7 +6,59 @@ parameters
 	M = 10000
 end-parameters
 
+declarations
+  NUMNODES: set of real
 
+  PMIN:  array(NUMNODES) of real
+  PMAX:   array(NUMNODES) of real
+  D:   array(NUMNODES) of real
+  
+  NUMLINES: set of real
+  NODEI:  array(NUMLINES) of real
+  NODEJ:  array(NUMLINES) of real
+  X:  array(NUMLINES) of real
+  FMAX:  array(NUMLINES) of real
+
+end-declarations
+
+
+initialisations from 'mmsheet.xlsx:'+'data.xlsm'
+  NUMNODES
+  NUMLINES
+  PMAX as "skiph;noindex;PMAX"
+  PMIN as "skiph;noindex;PMIN"
+  D as "skiph;noindex;D"
+  NODEI as "skiph;noindex;NODEI"
+  NODEJ as "skiph;noindex;NODEJ"
+  X as "skiph;noindex;X"
+  FMAX as "skiph;noindex;FMAX"
+end-initialisations
+
+
+
+
+
+
+! initialisations from 'mmsheet.excel:'+'data.xlsx'
+! 	A 			as "skiph;noindex;A"
+! 	B			as "skiph;noindex;B"
+! end-initialisations
+
+
+! procedure createYBus
+!   forall(i in setNodes) do
+!     forall(j in setNodes) do
+!       B(i,j) := 10*i + j
+!     end-do
+!   end-do
+! end-procedure
+
+
+
+
+! writeln(B)
+
+end-model
 declarations
   P_MIN: array(gen) of real
   P_MAX: array(gen) of real
@@ -23,4 +75,8 @@ initialisations from 'mmsheet.excel:'+'data.xlsx'
 	B			as "skiph;noindex;B"
 end-initialisations
 
+
+! function suma(x: integer): integer
+!   returned :=x*3
+! end-function
 
