@@ -19,6 +19,7 @@ declarations
   X:  array(NUMLINES) of real
   FMAX:  array(NUMLINES) of real
 
+  B: array(NUMNODES,NUMNODES) of real
 end-declarations
 
 
@@ -33,5 +34,33 @@ initialisations from 'mmsheet.xlsx:'+'data.xlsm'
   X as "skiph;noindex;X"
   FMAX as "skiph;noindex;FMAX"
 end-initialisations
+
+
+procedure readBMatrix
+  forall(i in NUMLINES) do
+    ni := NODEI(i)
+    nj := NODEJ(i)
+    yij := 1/X(i)
+    B(ni,nj) := yij
+  end-do
+end-procedure
+
+procedure createBMatrix
+  forall(i in NUMNODES) do
+    B(i,i) := sum(j in NUMNODES)B(i,j)
+  end-do
+  forall(i in NUMNODES) do
+    forall(j in NUMNODES) do
+      if(i<>j) then
+        B(i,j) := -B(i,j)
+      end-if
+    end-do
+  end-do
+end-procedure
+
+
+readBMatrix
+createBMatrix
+
 
 end-model
