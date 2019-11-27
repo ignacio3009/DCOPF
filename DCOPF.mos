@@ -23,7 +23,8 @@ declarations
   !Variables
   P: array(NUMNODES) of mpvar
   Theta: array(NUMNODES) of mpvar
-
+  !Objective
+  Objective: linctr
 end-declarations
 
 
