@@ -11,13 +11,15 @@ declarations
 
   PMIN:  array(NUMNODES) of real
   PMAX:   array(NUMNODES) of real
+  CV: array(NUMNODES) of real
   D:   array(NUMNODES) of real
 
   NUMLINES: set of real
   NODEI:  array(NUMLINES) of real
   NODEJ:  array(NUMLINES) of real
   X:  array(NUMLINES) of real
-  FMAX:  array(NUMLINES) of real
+  FMAXIJ:  array(NUMLINES) of real
+  FMAX: array(NUMNODES, NUMNODES) of real
   !Matrix of admittance
   B: array(NUMNODES,NUMNODES) of real
   !Variables
@@ -33,13 +35,13 @@ initialisations from 'mmsheet.xlsx:'+'data.xlsm'
   NUMLINES
   PMAX as "skiph;noindex;PMAX"
   PMIN as "skiph;noindex;PMIN"
+  CV as "skiph;noindex;COST"
   D as "skiph;noindex;D"
   NODEI as "skiph;noindex;NODEI"
   NODEJ as "skiph;noindex;NODEJ"
   X as "skiph;noindex;X"
-  FMAX as "skiph;noindex;FMAX"
+  FMAXIJ as "skiph;noindex;FMAXIJ"
 end-initialisations
-
 
 procedure readBMatrix
   forall(i in NUMLINES) do
@@ -47,6 +49,7 @@ procedure readBMatrix
     nj := NODEJ(i)
     yij := 1/X(i)
     B(ni,nj) := yij
+    B(nj,ni) := yij
   end-do
 end-procedure
 
@@ -63,9 +66,63 @@ procedure createBMatrix
   end-do
 end-procedure
 
+!Routine for FMAX
+procedure createFMAX
+  forall(i in NUMLINES) do
+    ni := NODEI(i)
+    nj := NODEJ(i)
+    fmaxij := FMAXIJ(i)
+    FMAX(ni,nj) := fmaxij
+    FMAX(nj,ni) := fmaxij
+  end-do
+end-procedure
 
+
+!Creating B Matrix
 readBMatrix
 createBMatrix
+createFMAX
 
+
+!Objetive function
+Objective :=sum(i in NUMNODES)(CV(i)*P(i))
+
+!Limits of generators
+forall(i in NUMNODES) do
+  PMIN(i) <= P(i)
+  PMAX(i) >= P(i)
+end-do
+
+!Balancing of power
+forall(i in NUMNODES) do
+  sum(j in NUMNODES) B(i,j)*Theta(j) = P(i) - D(i)
+end-do
+
+!Flow Limits
+forall(i in NUMNODES) do
+  forall(j in NUMNODES) do
+    if(i<>j) then
+      B(i,j)*(Theta(i)-Theta(j)) <= FMAX(i,j)
+    end-if
+  end-do
+end-do
+
+!Definition of variables theta and power
+forall(i in NUMNODES) do
+  P(i) is_free
+  Theta(i) is_free
+end-do
+
+minimise(Objective)
+writeln("------Results: ------")
+
+!Print Results
+forall(i in NUMNODES) do
+  writeln("P(",i,") = ",getsol(P(i)))
+end-do
+
+forall(i in NUMNODES) do
+  writeln("Theta(",i,") = ",getsol(Theta(i)))
+end-do
 
 end-model
