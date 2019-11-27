@@ -18,8 +18,12 @@ declarations
   NODEJ:  array(NUMLINES) of real
   X:  array(NUMLINES) of real
   FMAX:  array(NUMLINES) of real
-
+  !Matrix of admittance
   B: array(NUMNODES,NUMNODES) of real
+  !Variables
+  P: array(NUMNODES) of mpvar
+  Theta: array(NUMNODES) of mpvar
+
 end-declarations
 
 
